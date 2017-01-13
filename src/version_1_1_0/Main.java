@@ -16,27 +16,24 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		
-		playChord("test");
-		
-//		String str = "";
-//		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-//
-//		while(true){
-//			System.out.println("Please input Chord.");
-//			str = printChord(new String(in.readLine()));
-//
-//			if(!str.equals("break"))
-//				System.out.println(str);
-//			else if(str.equals("non_command"))
-//				System.out.println("ERROR: This is Not Chord");
-//			else
-//				break;
-//		}
-//		System.out.println("Finish this program.");
+		String str = "";
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+		while(true){
+			System.out.println("Please input Chord.");
+			str = playChord(new String(in.readLine()));
+			if(!str.equals("break"))
+				System.out.println(str);
+			else if(str.equals("non_command"))
+				System.out.println("ERROR: This is Not Chord");
+			else
+				break;
+		}
+		System.out.println("This program finished.");
 	}
 
 	
-	private static String printChord(String str){
+	public static String printChord(String str){
 		if(str.equals("C"))
 			return "ド ミ ソ";
 		else if(str.equals("Dm"))
@@ -58,14 +55,33 @@ public class Main {
 	}
 	
 	
-	private static void playChord(String str){
+	public static String playChord(String str){
 		
 		Player player = new Player();
 		
-		player.addChord(chord_C, 1, 1, 1, 1);
+		if(str.equals("C"))
+			player.addChord(chord_C, 1, 1, 1, 1);
+		else if(str.equals("Dm"))
+			player.addChord(chord_Dm, 1, 1, 1, 1);
+		else if(str.equals("Em"))
+			player.addChord(chord_Em, 1, 1, 1, 1);
+		else if(str.equals("F"))
+			player.addChord(chord_F, 1, 1, 1, 1);
+		else if(str.equals("G"))
+			player.addChord(chord_G, 1, 1, 1, 1);
+		else if(str.equals("Am"))
+			player.addChord(chord_Am, 1, 1, 1, 1);
+		else if(str.equals("Bmb5"))
+			player.addChord(chord_Bmb5, 1, 1, 1, 1);
+		else if(str.equals("X"))
+			return "break";
+		else
+			return "non_command";
 		
 		player.play();
 		
 		player.close();
+		
+		return "Chord is Played";
 	}
 }

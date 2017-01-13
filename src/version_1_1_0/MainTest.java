@@ -12,5 +12,11 @@ public class MainTest {
 		assertEquals("ド ミ ソ", Main.printChord("C"));
 		assertEquals("break", Main.printChord("X"));
 	}
+	
+	public void testPlayChord() {
+		assertEquals("non_command", Main.printChord("foo"));
+		assertEquals("Chord is played", Main.printChord("C"));
+		assertEquals("break", Main.printChord("X"));
+	}
 
 }
