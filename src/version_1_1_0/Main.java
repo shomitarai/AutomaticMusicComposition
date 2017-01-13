@@ -17,19 +17,23 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		
 		String str = "";
+		
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
 		while(true){
+			Player player = new Player();
 			System.out.println("Please input Chord.");
-			str = playChord(new String(in.readLine()));
-			if(!str.equals("break"))
+			str = playChord(player, new String(in.readLine()));
+			if(!str.equals("break")){
 				System.out.println(str);
-			else if(str.equals("non_command"))
-				System.out.println("ERROR: This is Not Chord");
-			else
+				player.play();
+			}
+			else{
 				break;
+			}
 		}
 		System.out.println("This program finished.");
+		System.exit(0);
 	}
 
 	
@@ -55,10 +59,7 @@ public class Main {
 	}
 	
 	
-	public static String playChord(String str){
-		
-		Player player = new Player();
-		
+	public static String playChord(Player player, String str){
 		if(str.equals("C"))
 			player.addChord(chord_C, 1, 1, 1, 1);
 		else if(str.equals("Dm"))
@@ -77,11 +78,10 @@ public class Main {
 			return "break";
 		else
 			return "non_command";
-		
-		player.play();
-		
-		player.close();
-		
 		return "Chord is Played";
 	}
+	
+//	public static String convert_MIDI_to_Chord(byte[] midiArray){	
+//		return "";
+//	}
 }
