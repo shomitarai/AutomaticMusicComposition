@@ -9,9 +9,9 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 /**
- * �������������f�B��R�[�h��MIDI���Đ�����N���X
+ * 生成したメロディやコードのMIDIを再生するクラス
  * @author Shun Yamashita
- * �[�~�p�Ɉꕔ����(@author BENJAMIN)
+ * ゼミ用に一部改変(@author BENJAMIN)
  */	
 public class Player {
 	private Sequencer sequencer;
@@ -22,10 +22,10 @@ public class Player {
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
 			sequence = new Sequence(Sequence.PPQ, 480);
-			for(int track = 0; track < 16; track++) { // 16�̃g���b�N����
+			for(int track = 0; track < 16; track++) { // 16個のトラック生成
 				sequence.createTrack();
 			}
-			setBpm(120); // �f�t�H���g��BPM
+			setBpm(120); // デフォルトのBPM
 			sequencer.setSequence(sequence);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -33,8 +33,8 @@ public class Player {
 	}
 
 	/**
-	 * BPM���w�肷��
-	 * @param bpm : 1���Ԃɑł��̉�
+	 * BPMを指定する
+	 * @param bpm : 1分間に打つ拍の回数
 	 */
 	private void setBpm(int bpm) {
 		try {
@@ -51,31 +51,31 @@ public class Player {
 	}
 
 	/**
-	 * �w�肵���g���b�N�ɉ�����ǉ�����
-	 * @param track      : ������炷�g���b�N�ԍ�
-	 * @param program    : �y��ԍ�
-	 * @param note       : �����ԍ�(MIDI�ԍ�)
-	 * @param position   : ������炷�ʒu
-	 * @param duration   : ������炷����
+	 * 指定したトラックに音符を追加する
+	 * @param track      : 音符を鳴らすトラック番号
+	 * @param program    : 楽器番号
+	 * @param note       : 音程番号(MIDI番号)
+	 * @param position   : 音符を鳴らす位置
+	 * @param duration   : 音符を鳴らす長さ
 	 */
 	private void addNote(int track, int program, int note, int position, int duration) {
 		try {
-			// �y��ύX�C�x���g�𐶐�
+			// 楽器変更イベントを生成
 			ShortMessage programChange = new ShortMessage();
 			programChange.setMessage(ShortMessage.PROGRAM_CHANGE, track - 1, program - 1, 0);
 			MidiEvent programChangeEvent = new MidiEvent(programChange, position);
 
-			// �m�[�g�I���C�x���g�𐶐�
+			// ノートオンイベントを生成
 			ShortMessage noteOn = new ShortMessage();
 			noteOn.setMessage(ShortMessage.NOTE_ON, track - 1, note, 100);
 			MidiEvent noteOnEvent = new MidiEvent(noteOn, position);
 
-			// �m�[�g�I�t�C�x���g�𐶐�
+			// ノートオフイベントを生成
 			ShortMessage noteOff = new ShortMessage();
 			noteOff.setMessage(ShortMessage.NOTE_OFF, track - 1, note, 0);
 			MidiEvent noteOffEvent = new MidiEvent(noteOff, position + duration);
 
-			// �V�[�P���X�ɃC�x���g�Q��ǉ�
+			// シーケンスにイベント群を追加
 			sequence.getTracks()[track - 1].add(programChangeEvent);
 			sequence.getTracks()[track - 1].add(noteOnEvent);
 			sequence.getTracks()[track - 1].add(noteOffEvent);
@@ -85,23 +85,23 @@ public class Player {
 	}
 
 	/**
-	 * �����f�B��ǉ�����
-	 * @param midi     : �����f�B��MIDI�ԍ�
-	 * @param program  : �y��ԍ�
-	 * @param position : �R�[�h��炷�ʒu
-	 * @param duration : �R�[�h��炷����
+	 * メロディを追加する
+	 * @param midi     : メロディのMIDI番号
+	 * @param program  : 楽器番号
+	 * @param position : コードを鳴らす位置
+	 * @param duration : コードを鳴らす長さ
 	 */
 	private void addMelody(byte midi, int program, int position, int duration) {
 		addNote(1, program, midi, position, duration);
 	}
 
 	/**
-	 * �����f�B��ǉ�����(�����^�C�~���O�����߂┏, �������Ԓ���n�������Ŏw�肷��ꍇ�Ɏg��)
-	 * @param midi       : �R�[�h�\������MIDI�ԍ��z��
-	 * @param program    : �y��ԍ�
-	 * @param measure    : �R�[�h��炷����
-	 * @param beat       : �R�[�h��炷��
-	 * @param separation : �R�[�h��炷����(separation = 4�Ƃ����4���������̒����ɂȂ�)
+	 * メロディを追加する(発音タイミングを小節や拍, 発音時間長をn分音符で指定する場合に使う)
+	 * @param midi       : コード構成音のMIDI番号配列
+	 * @param program    : 楽器番号
+	 * @param measure    : コードを鳴らす小節
+	 * @param beat       : コードを鳴らす拍
+	 * @param separation : コードを鳴らす長さ(separation = 4とすれば4分音符分の長さになる)
 	 */
 	public void addMelody(byte midi, int program, int measure, int beat, int separation) {
 		int position = (480 * 4) * (measure - 1) + 480 * (beat - 1);
@@ -110,11 +110,11 @@ public class Player {
 	}
 
 	/**
-	 * �R�[�h��ǉ�����
-	 * @param midi     : �R�[�h�\������MIDI�ԍ��z��
-	 * @param program  : �y��ԍ�
-	 * @param position : �R�[�h��炷�ʒu
-	 * @param duration : �R�[�h��炷����
+	 * コードを追加する
+	 * @param midi     : コード構成音のMIDI番号配列
+	 * @param program  : 楽器番号
+	 * @param position : コードを鳴らす位置
+	 * @param duration : コードを鳴らす長さ
 	 */
 	private void addChord(byte[] midi, int program, int position, int duration) {
 		for(int n = 0; n < midi.length; n++) {
@@ -123,12 +123,12 @@ public class Player {
 	}
 		
 	/**
-	 * �R�[�h��ǉ�����(�����^�C�~���O�����߂┏, �������Ԓ���n�������Ŏw�肷��ꍇ�Ɏg��)
-	 * @param midi       : �R�[�h�\������MIDI�ԍ��z��
-	 * @param program    : �y��ԍ�
-	 * @param measure    : �R�[�h��炷����
-	 * @param beat       : �R�[�h��炷��
-	 * @param separation : �R�[�h��炷����(separation = 4�Ƃ����4���������̒����ɂȂ�)
+	 * コードを追加する(発音タイミングを小節や拍, 発音時間長をn分音符で指定する場合に使う)
+	 * @param midi       : コード構成音のMIDI番号配列
+	 * @param program    : 楽器番号
+	 * @param measure    : コードを鳴らす小節
+	 * @param beat       : コードを鳴らす拍
+	 * @param separation : コードを鳴らす長さ(separation = 4とすれば4分音符分の長さになる)
 	 */
 	public void addChord(byte[] midi, int program, int measure, int beat, int separation) {
 		int position = (480 * 4) * (measure - 1) + 480 * (beat - 1);
